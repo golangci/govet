@@ -4,7 +4,7 @@
 
 // This file contains boolean condition tests.
 
-package main
+package govet
 
 import (
 	"go/ast"

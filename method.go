@@ -4,7 +4,7 @@
 
 // This file contains the code to check canonical methods.
 
-package main
+package govet
 
 import (
 	"fmt"

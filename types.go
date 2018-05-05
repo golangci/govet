@@ -4,7 +4,7 @@
 
 // This file contains the pieces of the tool that use typechecking from the go/types package.
 
-package main
+package govet
 
 import (
 	"go/ast"

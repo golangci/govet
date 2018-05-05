@@ -4,7 +4,7 @@
 
 // Identify mismatches between assembly files and Go func declarations.
 
-package main
+package govet
 
 import (
 	"bytes"

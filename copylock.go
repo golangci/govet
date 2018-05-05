@@ -4,7 +4,7 @@
 
 // This file contains the code to check that locks are not passed by value.
 
-package main
+package govet
 
 import (
 	"bytes"

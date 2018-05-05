@@ -19,7 +19,7 @@ For example:
 See: https://golang.org/doc/go_faq.html#closures_and_goroutines
 */
 
-package main
+package govet
 
 import "go/ast"
 

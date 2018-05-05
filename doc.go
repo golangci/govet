@@ -221,4 +221,4 @@ vets the files named, all of which must be in the same package.
 recursively descends the directory, vetting each package it finds.
 
 */
-package main
+package govet

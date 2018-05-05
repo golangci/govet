@@ -4,7 +4,7 @@
 
 // This file contains the printf-checker.
 
-package main
+package govet
 
 import (
 	"bytes"

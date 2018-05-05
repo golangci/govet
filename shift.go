@@ -6,7 +6,7 @@
 This file contains the code to check for suspicious shifts.
 */
 
-package main
+package govet
 
 import (
 	"go/ast"

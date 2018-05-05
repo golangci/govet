@@ -28,7 +28,7 @@ For example:
 
 */
 
-package main
+package govet
 
 import (
 	"flag"

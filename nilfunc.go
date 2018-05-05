@@ -7,7 +7,7 @@ This file contains the code to check for useless function comparisons.
 A useless comparison is one like f == nil as opposed to f() == nil.
 */
 
-package main
+package govet
 
 import (
 	"go/ast"

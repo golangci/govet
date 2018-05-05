@@ -4,7 +4,7 @@
 
 // Vet is a simple checker for static errors in Go source code.
 // See doc.go for more information.
-package main
+package govet
 
 import (
 	"bytes"
@@ -432,9 +432,6 @@ func doPackage(names []string, basePkg *Package) *Package {
 	// Type check the package.
 	errs := pkg.check(fs, astFiles)
 	if errs != nil {
-		if vcfg.SucceedOnTypecheckFailure {
-			os.Exit(0)
-		}
 		if *verbose || mustTypecheck {
 			for _, err := range errs {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -501,7 +498,6 @@ func walkDir(root string) {
 // identification and a newline, and exits.
 func errorf(format string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, "vet: "+format+"\n", args...)
-	os.Exit(2)
 }
 
 // warnf formats the error to standard error, adding program
@@ -529,12 +525,20 @@ func Printf(format string, args ...interface{}) {
 
 // Bad reports an error and sets the exit code..
 func (f *File) Bad(pos token.Pos, args ...interface{}) {
+	foundIssues = append(foundIssues, Issue{
+		Pos:     f.fset.Position(pos),
+		Message: fmt.Sprint(args...),
+	})
 	f.Warn(pos, args...)
 	setExit(1)
 }
 
 // Badf reports a formatted error and sets the exit code.
 func (f *File) Badf(pos token.Pos, format string, args ...interface{}) {
+	foundIssues = append(foundIssues, Issue{
+		Pos:     f.fset.Position(pos),
+		Message: fmt.Sprintf(format, args...),
+	})
 	f.Warnf(pos, format, args...)
 	setExit(1)
 }

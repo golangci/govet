@@ -4,14 +4,15 @@
 
 // This file contains the test for unkeyed struct literals.
 
-package main
+package govet
 
 import (
-	"cmd/vet/internal/whitelist"
 	"flag"
 	"go/ast"
 	"go/types"
 	"strings"
+
+	"github.com/golangci/govet/lib/whitelist"
 )
 
 var compositeWhiteList = flag.Bool("compositewhitelist", true, "use composite white list; for testing only")

@@ -4,7 +4,7 @@
 
 // Check for invalid uintptr -> unsafe.Pointer conversions.
 
-package main
+package govet
 
 import (
 	"go/ast"

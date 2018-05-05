@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package govet
 
 import (
-	"cmd/vet/internal/cfg"
 	"fmt"
 	"go/ast"
 	"go/types"
 	"strconv"
+
+	"github.com/golangci/govet/lib/cfg"
 )
 
 func init() {

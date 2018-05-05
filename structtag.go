@@ -4,7 +4,7 @@
 
 // This file contains the test for canonical struct tags.
 
-package main
+package govet
 
 import (
 	"errors"

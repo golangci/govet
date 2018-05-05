@@ -9,7 +9,7 @@
 // Specifically, it warns about attempts to pass a Go chan, map, func,
 // or slice to C, either directly, or via a pointer, array, or struct.
 
-package main
+package govet
 
 import (
 	"go/ast"

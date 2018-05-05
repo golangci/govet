@@ -5,7 +5,7 @@
 // This file contains the check for http.Response values being used before
 // checking for errors.
 
-package main
+package govet
 
 import (
 	"go/ast"

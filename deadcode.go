@@ -4,7 +4,7 @@
 
 // Check for syntactically unreachable code.
 
-package main
+package govet
 
 import (
 	"go/ast"

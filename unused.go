@@ -5,7 +5,7 @@
 // This file defines the check for unused results of calls to certain
 // pure functions.
 
-package main
+package govet
 
 import (
 	"flag"
