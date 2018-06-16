@@ -29,13 +29,13 @@ import (
 // Important! If you add flags here, make sure to update cmd/go/internal/vet/vetflag.go.
 
 var (
-	verbose = flag.Bool("v", false, "verbose")
+	verbose = flag.Bool("v", true, "verbose")
 	source  = flag.Bool("source", false, "import from source instead of compiled object files")
 	tags    = flag.String("tags", "", "space-separated list of build tags to apply when parsing")
 	tagList = []string{} // exploded version of tags flag; set in main
 
 	vcfg          vetConfig
-	mustTypecheck bool
+	mustTypecheck = true
 )
 
 var exitCode = 0
