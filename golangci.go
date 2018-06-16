@@ -33,7 +33,12 @@ func Run(files []string, checkShadowing bool) ([]Issue, error) {
 			includesNonTest = true
 		}
 	}
-	if doPackage(files, nil) == nil {
+	pkg, err := doPackage(files, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if pkg == nil {
 		return nil, nil
 	}
 

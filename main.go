@@ -35,7 +35,7 @@ var (
 	tagList = []string{} // exploded version of tags flag; set in main
 
 	vcfg          vetConfig
-	mustTypecheck = true
+	mustTypecheck bool
 )
 
 var exitCode = 0
@@ -271,7 +271,7 @@ func main() {
 		}
 		os.Exit(exitCode)
 	}
-	if doPackage(flag.Args(), nil) == nil {
+	if pkg, _ := doPackage(flag.Args(), nil); pkg == nil {
 		warnf("no files checked")
 	}
 	os.Exit(exitCode)
@@ -372,7 +372,7 @@ func doPackageDir(directory string) {
 	names = append(names, pkg.TestGoFiles...) // These are also in the "foo" package.
 	names = append(names, pkg.SFiles...)
 	prefixDirectory(directory, names)
-	basePkg := doPackage(names, nil)
+	basePkg, _ := doPackage(names, nil)
 	// Is there also a "foo_test" package? If so, do that one as well.
 	if len(pkg.XTestGoFiles) > 0 {
 		names = pkg.XTestGoFiles
@@ -394,24 +394,22 @@ type Package struct {
 
 // doPackage analyzes the single package constructed from the named files.
 // It returns the parsed Package or nil if none of the files have been checked.
-func doPackage(names []string, basePkg *Package) *Package {
+func doPackage(names []string, basePkg *Package) (*Package, error) {
 	var files []*File
 	var astFiles []*ast.File
 	fs := token.NewFileSet()
 	for _, name := range names {
 		data, err := ioutil.ReadFile(name)
 		if err != nil {
-			// Warn but continue to next package.
-			warnf("%s: %s", name, err)
-			return nil
+			return nil, fmt.Errorf("can't read %s: %s", name, err)
 		}
+
 		checkBuildTag(name, data)
 		var parsedFile *ast.File
 		if strings.HasSuffix(name, ".go") {
 			parsedFile, err = parser.ParseFile(fs, name, data, 0)
 			if err != nil {
-				warnf("%s: %s", name, err)
-				return nil
+				return nil, fmt.Errorf("can't parse %s: %s", name, err)
 			}
 			astFiles = append(astFiles, parsedFile)
 		}
@@ -423,27 +421,23 @@ func doPackage(names []string, basePkg *Package) *Package {
 			dead:    make(map[ast.Node]bool),
 		})
 	}
+
 	if len(astFiles) == 0 {
-		return nil
+		return nil, nil
 	}
+
 	pkg := new(Package)
 	pkg.path = astFiles[0].Name.Name
 	pkg.files = files
 	// Type check the package.
 	errs := pkg.check(fs, astFiles)
 	if errs != nil {
-		if *verbose || mustTypecheck {
-			for _, err := range errs {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
-			}
-			if mustTypecheck {
-				// This message could be silenced, and we could just exit,
-				// but it might be helpful at least at first to make clear that the
-				// above errors are coming from vet and not the compiler
-				// (they often look like compiler errors, such as "declared but not used").
-				errorf("typecheck failures")
-			}
+		errors := []string{}
+		for _, err := range errs {
+			errors = append(errors, err.Error())
 		}
+
+		return nil, fmt.Errorf("can't typecheck (are all packages `go install`-ed?): %s", strings.Join(errors, "|"))
 	}
 
 	// Check.
@@ -464,7 +458,7 @@ func doPackage(names []string, basePkg *Package) *Package {
 		}
 	}
 	asmCheck(pkg)
-	return pkg
+	return pkg, nil
 }
 
 func visit(path string, f os.FileInfo, err error) error {
