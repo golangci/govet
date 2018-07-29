@@ -272,7 +272,7 @@ func main() {
 		}
 		os.Exit(exitCode)
 	}
-	if pkg, _ := doPackage(nil, nil, nil, nil); pkg == nil {
+	if pkg, _ := doPackage(nil, nil, nil, nil, nil); pkg == nil {
 		warnf("no files checked")
 	}
 	os.Exit(exitCode)
@@ -345,7 +345,7 @@ func doPackageCfg(cfgFile string) {
 	stdImporter = &vcfg
 	inittypes()
 	mustTypecheck = true
-	doPackage(nil, nil, nil, nil)
+	doPackage(nil, nil, nil, nil, nil)
 }
 
 // doPackageDir analyzes the single package found in the directory, if there is one,
@@ -373,12 +373,12 @@ func doPackageDir(directory string) {
 	names = append(names, pkg.TestGoFiles...) // These are also in the "foo" package.
 	names = append(names, pkg.SFiles...)
 	prefixDirectory(directory, names)
-	basePkg, _ := doPackage(nil, nil, nil, nil)
+	basePkg, _ := doPackage(nil, nil, nil, nil, nil)
 	// Is there also a "foo_test" package? If so, do that one as well.
 	if len(pkg.XTestGoFiles) > 0 {
 		names = pkg.XTestGoFiles
 		prefixDirectory(directory, names)
-		doPackage(basePkg, nil, nil, nil)
+		doPackage(basePkg, nil, nil, nil, nil)
 	}
 }
 
@@ -393,12 +393,17 @@ type Package struct {
 	typesPkg  *types.Package
 }
 
+type astFilePathGetter func(f *ast.File, fset *token.FileSet) (string, error)
+
 // doPackage analyzes the single package constructed from the named files.
 // It returns the parsed Package or nil if none of the files have been checked.
-func doPackage(basePkg *Package, pkgInfo *loader.PackageInfo, fs *token.FileSet, astFiles []*ast.File) (*Package, error) {
+func doPackage(basePkg *Package, pkgInfo *loader.PackageInfo, fs *token.FileSet, astFiles []*ast.File, pg astFilePathGetter) (*Package, error) {
 	var files []*File
 	for _, parsedFile := range astFiles {
-		name := fs.Position(parsedFile.Pos()).Filename
+		name, err := pg(parsedFile, fs)
+		if err != nil {
+			return nil, err
+		}
 
 		data, err := ioutil.ReadFile(name)
 		if err != nil {
