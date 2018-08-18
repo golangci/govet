@@ -88,7 +88,7 @@ func isLocalType(f *File, typ types.Type) bool {
 		return isLocalType(f, x.Elem())
 	case *types.Named:
 		// names in package foo are local to foo_test too
-		return strings.TrimSuffix(x.Obj().Pkg().Path(), "_test") == strings.TrimSuffix(f.pkg.path, "_test")
+		return strings.TrimSuffix(x.Obj().Pkg().Path(), "_test") == strings.TrimSuffix(f.pkg.typesPkg.Path(), "_test")
 	}
 	return false
 }
