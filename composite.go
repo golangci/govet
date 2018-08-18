@@ -73,7 +73,10 @@ func checkUnkeyedLiteral(f *File, node ast.Node) {
 		return
 	}
 
-	f.Badf(cl.Pos(), "%s composite literal uses unkeyed fields", typeName)
+	f.Badf(cl.Pos(), "%s composite literal uses unkeyed fields",
+		types.TypeString(typ, func(pkg *types.Package) string {
+			return pkg.Name()
+		}))
 }
 
 func isLocalType(f *File, typ types.Type) bool {
